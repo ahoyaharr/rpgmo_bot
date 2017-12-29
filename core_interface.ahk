@@ -49,14 +49,13 @@ harvest(direction) {
 	print("[TASK]: Harvest resource")
 	toggle_bag()
 	Loop {
-		captcha_check()
+		hazard_check()
 		%direction%(1)
-		;captcha_check()
-		Sleep, 5000
+		;hazard_check()
+		Sleep, 1000
 		ImageSearch, FoundX, FoundY, 817, 226, 859, 267, %A_WorkingDir%\img\inventory_box.png
 		If (ErrorLevel) {
 			load_pet_inventory()
-			Sleep, 500
 		}
 		ImageSearch, FoundX, FoundY, 817, 226, 859, 267, %A_WorkingDir%\img\inventory_box.png
 		main_inventory_full := ErrorLevel
@@ -77,7 +76,7 @@ use_item(item) {
 	print("[SUCCESS]: Used " . item)
 	CoordMode, Pixel, Window
 	CoordMode, Mouse, Window
-	captcha_check()
+	hazard_check()
 	toggle_bag()
 }
 
@@ -87,22 +86,26 @@ toggle_bag() {
 }
 
 load_pet_inventory() {
-	sleep, 250
 	send c
-	Sleep, 250
+	Sleep, 1000
 }
 
 unload_pet_inventory() {
-	sleep, 250
 	send q
-	Sleep, 500
+	Sleep, 1000
 }
 
 deposit_all() {
 	send e
-	Sleep, 500
+	Sleep, 1000
 	unload_pet_inventory()
-	Sleep, 500
 	send e
-	Sleep, 500
+	Sleep, 1000
+}
+
+destroy_all() {
+	send, p
+	Sleep, 1000
+	Send, {enter}
+
 }

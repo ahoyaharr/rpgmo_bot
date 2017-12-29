@@ -45,8 +45,6 @@ initialise() {
 	print("[INIT]: initialisation complete!")
 }
 
-
-
 main(profile) {
 	initialise()
 	print("[ALERT]: Routine loaded. Mining white gold at Rakblood.")
@@ -85,11 +83,14 @@ main(profile) {
 			sleep, 1000
 			curr_pos := StrSplit(get_coordinate(), ",")
 		} Until (abs(curr_pos[1] - 34) <= 4 and abs(curr_pos[2] - 68) <= 5)
+		count := count + 1
 	}
 }
+
 
 #q::main("hello")
 #w::reload
 #e::pause
 #r::FindClick()
-#t::Exit
+#t::hazard_check()
+#p::Console.Alloc()

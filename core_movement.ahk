@@ -7,11 +7,13 @@ get_coordinate() {
 	WinActivate, RPG MO - Early Access
 	newline := "`n"
 	;Click, 569, 32, 0
-	Click, 522, 45, 0
+	;Click, 522, 45, 0
+	Click, 530, 46, 0
 	Send, {LControl Down}
 	Send, {q}
 	Send, {LControl Up}
-	Click, 569, 31 Left, 1
+	Click, 577, 31, Left, 1
+	;Click, 569, 31 Left, 1
 	sleep, 250
 	coordinate := RegExReplace(clipboard, "[()]", "")
 	StringReplace , coordinate, coordinate, %A_Space%,,All
@@ -69,7 +71,7 @@ move(x, y) {
 			Run %A_WorkingDir%\ocr\capture.exe --portable
 		}
 		Sleep, 1250
-		captcha_check()
+		hazard_check()
 	}
 	print("[SUCCESS]: Moved to (" . x . ", " . y . ")")
 }
