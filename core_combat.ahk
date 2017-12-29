@@ -3,6 +3,7 @@
 
 #Include, core_captcha.ahk
 
+
 wait_begin_combat(k) {
 	print("ALERT: Waiting for combat to begin")
 	CoordMode, Pixel, Window
@@ -21,6 +22,24 @@ wait_begin_combat(k) {
 	return ErrorLevel
 }
 
+attack_nearest(monster) {
+	print("[TASK]: Searching for nearest " . monster)
+	CoordMode, Mouse, Window
+	Click, %player_x%, %player_y%, 0
+	images := FindClick(monster, "d n r""RPG MO - Early Access""")
+	if (images = 0) {
+		print("[WARNING]: No " . monster . " were found!")
+		return images
+	}
+	c := StrSplit(images, ",")
+	x := c[1]
+	y := c[2]
+	Click, %x%, %y%, 1
+	CoordMode, Mouse, Window
+	print("[SUCCESS]: Attacking " . monster)
+	return 1 
+}
+
 complete_combat(k) {
 	print("[ALERT]: Waiting for combat to end")
 	CoordMode, Pixel, Window
@@ -32,7 +51,7 @@ complete_combat(k) {
 	Until (ErrorLevel != 0 or A_Index > (k * 10))
 	If (ErrorLevel) {
 		print("[ALERT]: Combat has ended")
-		captcha_check()
+		hazard_check()
 	} Else {
 		print("[WARNING]: " k . " seconds have passed before combat completed, continuing")
 	}
