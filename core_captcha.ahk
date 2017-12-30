@@ -1,5 +1,6 @@
 #Include, lib\console.ahk
 
+
 hazard_check() {
 	CoordMode, Pixel, Window
 	daily_login_check()
@@ -9,7 +10,7 @@ hazard_check() {
 daily_login_check() {
 	; Currently searching for a green box because the text wasn't working
 	; But we should try to fix that later 
-	ImageSearch, FoundX, FoundY, 348, 250, 383, 282, C:\Users\a\AppData\Roaming\MacroCreator\Screenshots\Screen_20171228140809.png
+	ImageSearch, FoundX, FoundY, 348, 250, 383, 282, %A_WorkingDir%\img\interface\daily_login.png
 	If (ErrorLevel = 0) {
 		print("[ALERT] Daily login screen detected!", 1)
 	    Click, 565, 192 Left, 1
@@ -17,7 +18,7 @@ daily_login_check() {
 }
 
 captcha_check(id := -1) {
-	ImageSearch, FoundX, FoundY, 98, 63, 734, 415, %A_WorkingDir%\img\captcha_exist.png
+	ImageSearch, FoundX, FoundY, 98, 63, 734, 415, %A_WorkingDir%\img\interface\captcha_exist.png
 	If (ErrorLevel = 0) { 
 		if (id != -1 and id != "") { ; If captcha window still exists after recursing, then the solution must have been bad 
 			report_error(id)
@@ -40,7 +41,7 @@ captcha_check(id := -1) {
 		Send, %solution% ; input solution 
 		Sleep, 2500
 		CoordMode, Pixel, Window
-		ImageSearch, FoundX, FoundY, 396, 231, 721, 466, %A_WorkingDir%\img\captcha_submit.png
+		ImageSearch, FoundX, FoundY, 396, 231, 721, 466, %A_WorkingDir%\img\interface\captcha_submit.png
 		If ErrorLevel = 0
 		{
 			Click, %FoundX%, %FoundY%
@@ -54,14 +55,14 @@ captcha_check(id := -1) {
 }
 
 select_input_box() {
-	ImageSearch, FoundX, FoundY, 269, 160, 604, 420, %A_WorkingDir%\img\captcha.png ; C:\Users\a\AppData\Roaming\MacroCreator\Screenshots\Screen_20171206190701.png
+	ImageSearch, FoundX, FoundY, 269, 160, 604, 420, %A_WorkingDir%\img\interface\captcha.png ; C:\Users\a\AppData\Roaming\MacroCreator\Screenshots\Screen_20171206190701.png
 	If (ErrorLevel = 0) {
 		Click, %FoundX%, %FoundY%
 	}
 }
 
 refresh_captcha() {
-	ImageSearch, FoundX, FoundY, 153, 106, 708, 451, %A_WorkingDir%\img\captcha_refresh.png
+	ImageSearch, FoundX, FoundY, 153, 106, 708, 451, %A_WorkingDir%\img\interface\captcha_refresh.png
 	if (ErrorLevel = 0) {
 		click %FoundX%, %FoundY%
 	}

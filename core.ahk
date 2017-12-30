@@ -14,6 +14,7 @@ SetWorkingDir %A_ScriptDir%
 CoordMode, Pixel, Window
 SetDefaultMouseSpeed, 0
 
+
 global player_x := 426 ; The the window coordinate of the 
 global player_y := 244 ; player character.
 
@@ -48,7 +49,7 @@ initialise() {
 main(profile) {
 	initialise()
 	print("[ALERT]: Routine loaded. Mining white gold at Rakblood.")
-	bronze_golem = %A_WorkingDir%\img\bronze_golem.png
+	bronze_golem = %A_WorkingDir%\img\monster\bronze_golem.png
 	count := 1
 	start_time := A_TickCount 
 	Loop {
@@ -56,6 +57,16 @@ main(profile) {
 		move(37, 65)
 		open_chest(east)
 		deposit_all()
+		if (is_potted("potion_of_mining_superior") != 0) {
+			print("[TASK]: Repotting", 1)
+			withdraw_one("potion_of_mining_superior")
+			Sleep, 500
+			;close_chest()
+			use_item("potion_of_mining_superior")
+			Sleep, 500
+			open_chest(east)
+			deposit_all()
+		}
 		withdraw("rakblood_teleport")
 		;close_chest()
 		move(30, 71)
@@ -87,6 +98,8 @@ main(profile) {
 	}
 }
 
+main("")
+
 
 #q::main("hello")
 #w::reload
@@ -94,3 +107,6 @@ main(profile) {
 #r::FindClick()
 #t::hazard_check()
 #p::Console.Alloc()
+
+#m::open_chest(east)
+#n::close_chest()
