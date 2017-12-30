@@ -3,29 +3,38 @@
 
 #Include, core_captcha.ahk
 
+chest_is_open() {
+	ImageSearch, FoundX, FoundY, 248, 117, 317, 154, %A_WorkingDir%\img\interface\chest.png
+	if (ErrorLevel) {
+		return False
+	} else {
+		return True
+	}
+}
+
 open_chest(direction) {
 	print("[TASK]: Open chest")
 	Loop { 
 		%direction%(1)
-		ImageSearch, FoundX, FoundY, 248, 117, 317, 154, %A_WorkingDir%\img\chest.png
 	} 
-	Until (ErrorLevel = 0)
+	Until (chest_is_open())
 	print("[SUCCESS]: Opened chest")
 }
 
 close_chest() {
-	print("[TASK]: Close chest")
-	Loop {
-		Click, 606, 135 Left, 1
-		Sleep, 100
-		ImageSearch, FoundX, FoundY, 248, 117, 317, 154, %A_WorkingDir%\img\chest.png
-	} Until (ErrorLevel != 0)
+	if (chest_is_open()) {
+		print("[TASK]: Close chest")
+		Loop {
+			Click, 606, 135 Left, 1
+			Sleep, 100
+		} Until (!chest_is_open())
+	}
 	print("[SUCCESS]: Chest closed")
 }
 
 withdraw(item) {
 	print("[TASK]: Withdraw " . item, 1)
-	p = %A_WorkingDir%\img\%item%.png
+	p = %A_WorkingDir%\img\items\%item%.png
 	c = "r""RPG MO - Early Access"" k{Click}{z}"
 	r := FindClick(p, c)
 	CoordMode, Pixel, Window
@@ -35,7 +44,21 @@ withdraw(item) {
 	} else {
 		print("[SUCCESS]: Withdrew " . item, 1)
 	}
+}
 
+withdraw_one(item) {
+	print("[TASK]: Withdraw " . item, 1)
+	p = %A_WorkingDir%\img\items\%item%.png
+	c = "r""RPG MO - Early Access"" k{Click}"
+	r := FindClick(p, c)
+	CoordMode, Pixel, Window
+	CoordMode, Mouse, Window
+	if (r = "") {
+		print("[WARNING]: Could not withdraw " . item, 1)
+	} else {
+		Click, 330, 389 Left, 1
+		print("[SUCCESS]: Withdrew " . item, 1)
+	}
 }
 
 cancel_action() {
@@ -53,13 +76,13 @@ harvest(direction) {
 		%direction%(1)
 		;hazard_check()
 		Sleep, 1000
-		ImageSearch, FoundX, FoundY, 817, 226, 859, 267, %A_WorkingDir%\img\inventory_box.png
+		ImageSearch, FoundX, FoundY, 817, 226, 859, 267, %A_WorkingDir%\img\interface\inventory_box.png
 		If (ErrorLevel) {
 			load_pet_inventory()
 		}
-		ImageSearch, FoundX, FoundY, 817, 226, 859, 267, %A_WorkingDir%\img\inventory_box.png
+		ImageSearch, FoundX, FoundY, 817, 226, 859, 267, %A_WorkingDir%\img\interface\inventory_box.png
 		main_inventory_full := ErrorLevel
-		ImageSearch, FoundX, FoundY, 815, 341, 859, 382, %A_WorkingDir%\img\inventory_box.png
+		ImageSearch, FoundX, FoundY, 815, 341, 859, 382, %A_WorkingDir%\img\interface\inventory_box.png
 		pet_inventory_full := ErrorLevel
 	} Until (main_inventory_full and pet_inventory_full)
 	toggle_bag()
@@ -70,14 +93,25 @@ harvest(direction) {
 use_item(item) {
 	print("[TASK]: Use " . item)
 	toggle_bag()
-	p = %A_WorkingDir%\img\%item%.png
-	c = "r""RPG MO - Early Access"""
-	FindClick(p, c)
-	print("[SUCCESS]: Used " . item)
-	CoordMode, Pixel, Window
-	CoordMode, Mouse, Window
+	;p = %A_WorkingDir%\img\items\%item%.png
+	;c = "r""RPG MO - Early Access"""
+	;FindClick(p, c)
+	;CoordMode, Pixel, Window
+	;CoordMode, Mouse, Window
+	ImageSearch, FoundX, FoundY, 565, 80, 858, 282, %A_WorkingDir%\img\items\%item%.png
+	if (!ErrorLevel) {
+		Click, %FoundX%, %FoundY%
+		print("[SUCCESS]: Used " . item)
+	} else {
+		print("[FAILURE]: " . item . " not found!")
+	}
 	hazard_check()
 	toggle_bag()
+}
+
+is_potted(potion) {
+	ImageSearch, FoundX, FoundY, 89, 87, 173, 172, %A_WorkingDir%\img\items\%potion%.png
+	return ErrorLevel
 }
 
 toggle_bag() {
