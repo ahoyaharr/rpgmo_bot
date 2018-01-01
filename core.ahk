@@ -82,7 +82,9 @@ main(profile) {
 		move(13, 38)
 		move(10, 30)
 		move(7, 20)
-		use_item("potion_of_mining_superior")
+		if (use_potion) {
+			use_item("potion_of_mining_superior")
+		}
 		harvest(west)
 		Loop {
 			use_item("rakblood_teleport")
