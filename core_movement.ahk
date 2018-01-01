@@ -1,19 +1,53 @@
 #Include, lib\console.ahk
+#Include, lib\find_click.ahk
 
 #Include, core_captcha.ahk
 #Include, core_ocr.ahk
 
 get_coordinate() {
 	WinActivate, RPG MO - Early Access
-	newline := "`n"
-	;Click, 569, 32, 0
-	;Click, 522, 45, 0
-	Click, 530, 46, 0
+	CoordMode, Pixel, Window
+	ImageSearch, x_l, y_l, 461, 25, 590, 54, %A_WorkingDir%\img\interface\coordinate_left.png
+	e1 := ErrorLevel
+	ImageSearch, x_r, y_r, 469, 32, 604, 49, %A_WorkingDir%\img\interface\coordinate_right.png
+	e2 := ErrorLevel
+
+	if (e1 or e2) { ; If either search failed, terminate 
+		print("Unable to find coordinate")
+		return False
+	}
+
+	x_l := x_l - 3 ; Left x bound 
+	x_r := x_r + 7 ; Right x bound 
+	y_l := y_l + 9 ; Bottom y bound
+	y_r := y_r - 8 ; Top y bound 
+
+	Click, %x_l%, %y_l%, 0
 	Send, {LControl Down}
 	Send, {q}
 	Send, {LControl Up}
-	Click, 577, 31, Left, 1
-	;Click, 569, 31 Left, 1
+	Click, %x_r%, %y_r%, Left, 1
+	i = 0
+	While (Clipboard = "" and i < 5) {
+		Sleep, 100
+		i := i + 1
+	}
+
+	coordinate := RegExReplace(clipboard, "[()]", "")
+	StringReplace , coordinate, coordinate, %A_Space%,,All
+	clipboard := "" ; reset the clipboard
+	return % coordinate	
+}
+
+;;; DEPRECATED, DO NOT USE ;;;
+get_coordinate2() {
+	WinActivate, RPG MO - Early Access
+	newline := "`n"
+	Click, 530, 46, 0 ; MANUALLY CHANGE AS NEEDED
+	Send, {LControl Down}
+	Send, {q}
+	Send, {LControl Up}
+	Click, 577, 31, Left, 1 ; MANUALLY CHANGE AS NEEDED
 	sleep, 250
 	coordinate := RegExReplace(clipboard, "[()]", "")
 	StringReplace , coordinate, coordinate, %A_Space%,,All
@@ -58,25 +92,20 @@ move(x, y) {
 				cx := player_x + north_x + east_x ; absolute mouse 
 				cy := player_y + north_y + east_y ; position
 				print("Clicking @ "  . cx . ", " . cy, 1)
-				Sleep, 500
+				;Sleep, 500
 				Click, %cx%, %cy%, Left, 1
 				failure_count := 1
 			}
 		} else {
-			print("[WARNING]: Could not detect position, restarting OCR", 1)
-			Process, Exist, capture.exe
-			if (ErrorLevel = 1) {
-				Process,Close,capture.exe
-			}
-			Run %A_WorkingDir%\ocr\capture.exe --portable
+			print("[WARNING]: Could not detect position", 1)
 		}
-		Sleep, 1250
+		Sleep, 300
 		hazard_check()
 	}
 	print("[SUCCESS]: Moved to (" . x . ", " . y . ")")
 }
 
-relative_move(x, y) {
+relative_click(x, y) {
 	north_x := y * 26.9  ; pixel offset for y axis 
 	north_y := y * -14.3 ; movement 
 
@@ -87,6 +116,10 @@ relative_move(x, y) {
 	cy := player_y + north_y + east_y ; position
 
 	Click, %cx%, %cy%, Left, 1
+}
+
+relative_move(x, y) {
+	relative_click(x, y)
 	Sleep % (abs(x) + abs(y)) * 250
 }
 
