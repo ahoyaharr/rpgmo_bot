@@ -6,8 +6,10 @@
 chest_is_open() {
 	ImageSearch, FoundX, FoundY, 248, 117, 317, 154, %A_WorkingDir%\img\interface\chest.png
 	if (ErrorLevel) {
+		print("chest is closed")
 		return False
 	} else {
+		print("chest is open")
 		return True
 	}
 }
@@ -93,15 +95,11 @@ harvest(direction) {
 use_item(item) {
 	print("[TASK]: Use " . item)
 	toggle_bag()
-	;p = %A_WorkingDir%\img\items\%item%.png
-	;c = "r""RPG MO - Early Access"""
-	;FindClick(p, c)
-	;CoordMode, Pixel, Window
-	;CoordMode, Mouse, Window
 	ImageSearch, FoundX, FoundY, 565, 80, 858, 282, %A_WorkingDir%\img\items\%item%.png
 	if (!ErrorLevel) {
 		Click, %FoundX%, %FoundY%
 		print("[SUCCESS]: Used " . item)
+		Sleep, 250
 	} else {
 		print("[FAILURE]: " . item . " not found!")
 	}
