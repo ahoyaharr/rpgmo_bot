@@ -14,9 +14,6 @@ main(profile) {
 			use_potion := True
 			print("[TASK]: Repotting", 1)
 			withdraw_one("potion_of_mining_superior")
-			Sleep, 500
-			open_chest(east)
-			deposit_all()
 		}
 		withdraw("rakblood_teleport")
 		move(30, 71)
@@ -35,9 +32,9 @@ main(profile) {
 		} Until (ErrorLevel)
 		move(13, 38)
 		move(10, 30)
-		move(16, 22)
+		move(7, 20)
 		use_item("potion_of_mining_superior")
-		harvest(north)
+		harvest(west)
 		Loop {
 			use_item("rakblood_teleport")
 			sleep, 1000

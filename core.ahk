@@ -6,6 +6,7 @@
 
 #Include, core_captcha.ahk
 #Include, core_combat.ahk
+#Include, core_farming.ahk
 #Include, core_interface.ahk
 #Include, core_movement.ahk
 #Include, core_ocr.ahk
@@ -53,22 +54,17 @@ main(profile) {
 	count := 1
 	start_time := A_TickCount 
 	Loop {
+		use_potion := False
 		print("[ALERT] Cycle " . count . " begins @ " . FormatSeconds(A_TickCount - start_time))
 		move(37, 65)
 		open_chest(east)
 		deposit_all()
 		if (is_potted("potion_of_mining_superior") != 0) {
+			use_potion := True
 			print("[TASK]: Repotting", 1)
 			withdraw_one("potion_of_mining_superior")
-			Sleep, 500
-			;close_chest()
-			use_item("potion_of_mining_superior")
-			Sleep, 500
-			open_chest(east)
-			deposit_all()
 		}
 		withdraw("rakblood_teleport")
-		;close_chest()
 		move(30, 71)
 		move(25, 62)
 		move(18, 55)
@@ -78,8 +74,6 @@ main(profile) {
 		PixelSearch, FoundX, FoundY, 383, 194, 418, 243, bronze_golem, 0, Fast RGB
 		If (ErrorLevel = 0) {
 				print("[ALERT]: bronze_golem detected.")
-				;move_west(1)
-				;attack_nearest(bronze_golem)
 				move_west(1)
 				Sleep, 1000
 				complete_combat(30)
@@ -87,8 +81,9 @@ main(profile) {
 		} Until (ErrorLevel)
 		move(13, 38)
 		move(10, 30)
-		move(16, 22)
-		harvest(north)
+		move(7, 20)
+		use_item("potion_of_mining_superior")
+		harvest(west)
 		Loop {
 			use_item("rakblood_teleport")
 			sleep, 1000
@@ -98,15 +93,14 @@ main(profile) {
 	}
 }
 
-main("")
-
-
 #q::main("hello")
 #w::reload
 #e::pause
 #r::FindClick()
 #t::hazard_check()
 #p::Console.Alloc()
+
+#z::get_coordinate()
 
 #m::open_chest(east)
 #n::close_chest()
