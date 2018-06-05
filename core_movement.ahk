@@ -9,11 +9,13 @@ get_coordinate() {
 	CoordMode, Pixel, Window
 	ImageSearch, x_l, y_l, 461, 25, 590, 54, %A_WorkingDir%\img\interface\coordinate_left.png
 	e1 := ErrorLevel
-	ImageSearch, x_r, y_r, 469, 32, 604, 49, %A_WorkingDir%\img\interface\coordinate_right.png
+	ImageSearch, x_r, y_r, 480, 32, 620, 49, *5 %A_WorkingDir%\img\interface\coordinate_right.png
 	e2 := ErrorLevel
 
 	if (e1 or e2) { ; If either search failed, terminate 
 		print("Unable to find coordinate")
+		print(e1)
+		print(e2)
 		return False
 	}
 
