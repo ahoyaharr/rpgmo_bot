@@ -1,4 +1,5 @@
 main(profile) {
+	enable_potion_use := False
 	initialise()
 	print("[ALERT]: Routine loaded. Mining white gold at Rakblood.")
 	bronze_golem = %A_WorkingDir%\img\monster\bronze_golem.png
@@ -10,7 +11,7 @@ main(profile) {
 		move(37, 65)
 		open_chest(east)
 		deposit_all()
-		if (is_potted("potion_of_mining_superior") != 0) {
+		if (enable_potion_use and is_potted("potion_of_mining_superior") != 0) {
 			use_potion := True
 			print("[TASK]: Repotting", 1)
 			withdraw_one("potion_of_mining_superior")
@@ -38,7 +39,26 @@ main(profile) {
 		}
 		harvest(west)
 		Loop {
-			use_item("rakblood_teleport")
+			if (!use_item("rakblood_teleport")) {
+				print("[WARNING]: could not find rakblood_teleport, walking back instead")
+				move(11, 30)
+				move(12, 41)
+				move(14, 51)
+				move_south(1)
+				Loop {
+				PixelSearch, FoundX, FoundY, 383, 194, 418, 243, bronze_golem, 0, Fast RGB
+				If (ErrorLevel = 0) {
+						print("[ALERT]: bronze_golem detected.")
+						move_west(1)
+						Sleep, 1000
+						complete_combat(30)
+					}
+				} Until (ErrorLevel)
+				move(20, 57)
+				move(25, 62)
+				move(33, 66)
+				move(37, 65)
+			}
 			sleep, 1000
 			curr_pos := StrSplit(get_coordinate(), ",")
 		} Until (abs(curr_pos[1] - 34) <= 4 and abs(curr_pos[2] - 68) <= 5)

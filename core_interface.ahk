@@ -92,19 +92,29 @@ harvest(direction) {
 	print("[SUCCESS]: Resources harvested")
 }
 
+has_item(item) {
+	toggle_bag()
+	ImageSearch, FoundX, FoundY, 565, 80, 858, 282, %A_WorkingDir%\img\items\%item%.png
+	toggle_bag()
+	return !ErrorLevel ; ErrorLevel is 0 when imageSearch is successful
+}
+
 use_item(item) {
+	success := False
 	print("[TASK]: Use " . item)
 	toggle_bag()
 	ImageSearch, FoundX, FoundY, 565, 80, 858, 282, %A_WorkingDir%\img\items\%item%.png
 	if (!ErrorLevel) {
 		Click, %FoundX%, %FoundY%
+		success := True
 		print("[SUCCESS]: Used " . item)
-		Sleep, 250
 	} else {
 		print("[FAILURE]: " . item . " not found!")
 	}
+	Sleep, 250
 	hazard_check()
 	toggle_bag()
+	return success
 }
 
 is_potted(potion) {
@@ -139,5 +149,4 @@ destroy_all() {
 	send, p
 	Sleep, 1000
 	Send, {enter}
-
 }
