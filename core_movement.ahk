@@ -25,9 +25,9 @@ get_coordinate() {
 	y_r := y_r - 8 ; Top y bound 
 
 	Click, %x_l%, %y_l%, 0
-	Send, {LControl Down}
+	Send, {LAlt Down}
 	Send, {q}
-	Send, {LControl Up}
+	Send, {LAlt Up}
 	Click, %x_r%, %y_r%, Left, 1
 	i = 0
 	While (Clipboard = "" and i < 5) {
@@ -46,9 +46,9 @@ get_coordinate2() {
 	WinActivate, RPG MO - Early Access
 	newline := "`n"
 	Click, 530, 46, 0 ; MANUALLY CHANGE AS NEEDED
-	Send, {LControl Down}
+	Send, {LALt Down}
 	Send, {q}
-	Send, {LControl Up}
+	Send, {LAlt Up}
 	Click, 577, 31, Left, 1 ; MANUALLY CHANGE AS NEEDED
 	sleep, 250
 	coordinate := RegExReplace(clipboard, "[()]", "")
