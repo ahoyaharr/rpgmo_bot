@@ -1,3 +1,6 @@
+#Include, core_captcha.ahk
+
+
 reset_queue() {
 	Click, 187, 290 Left, 1
 	Sleep, 250
@@ -18,6 +21,7 @@ execute_queue() {
 	}
 	working := True
 	while (working) {
+		hazard_check()
 		PixelSearch, FoundX, FoundY, 55, 174, 81, 181, 0xFFFFFF, 3, Fast RGB
 		working := !ErrorLevel
 		Sleep, 1000
