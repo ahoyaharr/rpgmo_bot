@@ -14,13 +14,14 @@ main(profile) {
 		; Move to tree 
 		move(82, 46)
 		move(82, 55)
-		move(83, 66)
-		move(83, 77)
-		move(82, 87)
-		harvest(east)
+		move(81, 66)
+		move(79, 76)
+		move(76, 83)
+		move(76, 89)
+		harvest(north)
 
 		; Return to chest
-		move(83, 77)
+		move(76, 76)
 		move(83, 66)
 		move(82, 55)
 		move(82, 46)
