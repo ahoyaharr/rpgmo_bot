@@ -12,7 +12,7 @@ distance_sort(v1, v2) {
 FormatSeconds(NumberOfSeconds)  ; Convert the specified number of seconds to hh:mm:ss format.
 {
     time = 19990101  ; *Midnight* of an arbitrary date.
-    time += %NumberOfSeconds%, seconds
+    time += %NumberOfSeconds% / 1000, seconds
     FormatTime, mmss, %time%, mm:ss
     return NumberOfSeconds//3600 ":" mmss
     /*
