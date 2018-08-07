@@ -40,7 +40,7 @@ attack_nearest(monster) {
 	return 1 
 }
 
-complete_combat(k) {
+complete_combat(k:=999999) {
 	print("[ALERT]: Waiting for combat to end")
 	CoordMode, Pixel, Window
 	Loop
@@ -58,16 +58,19 @@ complete_combat(k) {
 	return ErrorLevel
 }
 
-eat() {
-	; Add in inventory check 
+eat(k:=999999) {
+	; param k: the number of attempts
+	; returns TRUE if the player ate in less attempts than k.
 	CoordMode, Pixel, Window
 	Loop {
 		PixelSearch, FoundX, FoundY, 176, 57, 189, 72, 0x900000, 0, Fast RGB
 		if (ErrorLevel = 0) {
 			print("[ALERT]: Player at low health, eating food")
 			send r
-			sleep 750
+			sleep 1500
 		}
 		PixelSearch, FoundX, FoundY, 176, 57, 189, 72, 0x900000, 0, Fast RGB
-	} Until (ErrorLevel != 0)
+		k := k - 1
+	} Until (ErrorLevel != 0 or k <= 0)
+	return (k + 1) > 0
 }
