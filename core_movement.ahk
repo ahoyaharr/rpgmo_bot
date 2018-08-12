@@ -4,6 +4,8 @@
 #Include, core_captcha.ahk
 #Include, core_ocr.ahk
 
+global hk_ocr := "x"
+
 get_coordinate() {
 	WinActivate, RPG MO - Early Access
 	CoordMode, Pixel, Window
@@ -24,13 +26,14 @@ get_coordinate() {
 	y_l := y_l + 9 ; Bottom y bound
 	y_r := y_r - 8 ; Top y bound 
 
-	Click, %x_l%, %y_l%, 0
-	Send, {LAlt Down}
-	Send, {q}
-	Send, {LAlt Up}
-	Click, %x_r%, %y_r%, Left, 1
 	i = 0
 	While (Clipboard = "" and i < 5) {
+		Click, %x_l%, %y_l%, 0
+		Send, {LAlt Down}
+		send, %hk_ocr%
+		Send, {LAlt Up}
+		Sleep, 100
+		Click, %x_r%, %y_r%, Left, 1
 		Sleep, 100
 		i := i + 1
 	}
@@ -47,7 +50,7 @@ get_coordinate2() {
 	newline := "`n"
 	Click, 530, 46, 0 ; MANUALLY CHANGE AS NEEDED
 	Send, {LALt Down}
-	Send, {q}
+	send, %hk_ocr%
 	Send, {LAlt Up}
 	Click, 577, 31, Left, 1 ; MANUALLY CHANGE AS NEEDED
 	sleep, 250
