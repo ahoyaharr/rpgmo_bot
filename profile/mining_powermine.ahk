@@ -5,7 +5,7 @@ main(profile) {
 	count := 0
 	start_time := A_TickCount 
 	Loop {
-		harvest(east)
+		harvest(north)
 		destroy_all()
 		count := count + 1
 		print("[STATUS]: Finished mining " . count . " inventories.")

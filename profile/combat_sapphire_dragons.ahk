@@ -39,7 +39,7 @@ main(profile) {
 			    t := m[a_index]
 			    monster = %A_WorkingDir%\img\monsters\%t%.png
 				if (attack_nearest(monster) != 0) {
-					if (wait_begin_combat(7) = 0) {  ; return 0 if combat begins
+					if (wait_begin_combat(7)) {  ; return 0 if combat begins
 						complete_combat(20)
 						count := count + 1
 						print("[STATUS]: " . count . " kills in " . FormatSeconds(A_TickCount - start_time)) 
