@@ -73,7 +73,7 @@ screenshot_captcha() {
 	WinGetPos, win_x, win_y, , ,  RPG MO - Early Access
 	x1 := win_x + 323
 	y1 := win_y + 232
-	x2 := win_x + 490 ; 474
+	x2 := win_x + 520 ; 474
 	y2 := win_y + 303
 	arg := x1 . "," . y1 . "," . x2 . "," . y2
 	Run %A_WorkingDir%\boxcutter\boxcutter.exe -c %arg% %A_WorkingDir%\captcha\captcha.png
