@@ -6,10 +6,10 @@
 chest_is_open() {
 	ImageSearch, FoundX, FoundY, 248, 117, 317, 154, %A_WorkingDir%\img\interface\chest.png
 	if (ErrorLevel) {
-		print("chest is closed")
+		print("[STATUS] Chest is closed", 1)
 		return False
 	} else {
-		print("chest is open")
+		print("[STATUS] Chest is open", 1)
 		return True
 	}
 }
@@ -28,9 +28,10 @@ close_chest() {
 		print("[TASK]: Close chest")
 		Loop {
 			Click, 606, 135 Left, 1
-			Sleep, 100
+			Sleep, 1000
 		} Until (!chest_is_open())
 	}
+	sleep, 250
 	print("[SUCCESS]: Chest closed")
 }
 
@@ -41,10 +42,12 @@ withdraw(item) {
 	r := FindClick(p, c)
 	CoordMode, Pixel, Window
 	CoordMode, Mouse, Window
-	if (r = "") {
+	if (r = "0") {
 		print("[WARNING]: Could not withdraw " . item, 1)
+		return False
 	} else {
 		print("[SUCCESS]: Withdrew " . item, 1)
+		return True
 	}
 }
 
@@ -92,18 +95,36 @@ harvest(direction) {
 	print("[SUCCESS]: Resources harvested")
 }
 
-has_item(item) {
+process(direction, item) {
+	print("[TASK]: Process " . item)
 	toggle_bag()
+	if (use_item(item, False)) {
+		Loop {
+			hazard_check()
+			%direction%(1)
+			Sleep, 2500
+		} Until (!has_item(item, False))
+	}
+	toggle_bag()
+}
+
+has_item(item, toggle:=True) {
+	if (toggle) {
+		toggle_bag()
+	}
 	ImageSearch, FoundX, FoundY, 565, 80, 858, 282, %A_WorkingDir%\img\items\%item%.png
-	toggle_bag()
+	if (toggle) {
+		toggle_bag()
+	}	
 	return !ErrorLevel ; ErrorLevel is 0 when imageSearch is successful
 }
 
-use_item(item) {
+use_item(item, toggle:=True) {
 	success := False
 	print("[TASK]: Use " . item)
-	toggle_bag()
-	ImageSearch, FoundX, FoundY, 565, 80, 858, 282, %A_WorkingDir%\img\items\%item%.png
+	if (toggle) {
+		toggle_bag()
+	}	ImageSearch, FoundX, FoundY, 565, 80, 858, 282, %A_WorkingDir%\img\items\%item%.png
 	if (!ErrorLevel) {
 		Click, %FoundX%, %FoundY%
 		success := True
@@ -113,7 +134,9 @@ use_item(item) {
 	}
 	Sleep, 250
 	hazard_check()
-	toggle_bag()
+	if (toggle) {
+		toggle_bag()
+	}
 	return success
 }
 
@@ -149,4 +172,25 @@ destroy_all() {
 	send, p
 	Sleep, 1000
 	Send, {enter}
+}
+
+send_command(command, argument) {
+	CoordMode, Pixel, Window
+	Loop {
+		Send, {Enter}
+		Sleep, 250
+		ImageSearch, FoundX, FoundY, 47, 467, 85, 486, %A_WorkingDir%\img\interface\chat_bar.png
+	} Until (!ErrorLevel)
+
+	full_command := "/" . command . " " . argument
+	print("[ALERT] Sending command: '" . full_command . "'")
+	Send, %full_command%
+	Sleep, 250
+	Send, {Enter}
+}
+
+main_menu_is_open() {
+		CoordMode, Pixel, Window
+		ImageSearch, FoundX, FoundY, 108, 381, 155, 438, %A_WorkingDir%\img\interface\main_menu.png
+		return !ErrorLevel
 }
