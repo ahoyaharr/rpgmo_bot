@@ -3,6 +3,12 @@
 
 #Include, core_captcha.ahk
 
+attempt_combat(k, direction) {
+	%direction%(1)
+	if (wait_begin_combat(k)) {
+		complete_combat()
+	}
+}
 
 wait_begin_combat(k) {
 	print("ALERT: Waiting for combat to begin")
@@ -19,7 +25,7 @@ wait_begin_combat(k) {
 	} Else {
 		print("[WARNING]: " k . " seconds have passed before combat began, continuing")
 	}
-	return ErrorLevel
+	return !ErrorLevel
 }
 
 attack_nearest(monster) {
@@ -72,5 +78,5 @@ eat(k:=999999) {
 		PixelSearch, FoundX, FoundY, 176, 57, 189, 72, 0x900000, 0, Fast RGB
 		k := k - 1
 	} Until (ErrorLevel != 0 or k <= 0)
-	return (k + 1) > 0
+	return ErrorLevel
 }
