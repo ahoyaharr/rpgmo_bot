@@ -1,10 +1,21 @@
 #Include, lib\console.ahk
 
+activate_window() {
+	window_name = RPG MO - Early Access
+	WinActivate, %window_name%
+	WinGetActiveStats, title, width, height, x, y
+	return [width, height]
+}
 
 hazard_check() {
 	CoordMode, Pixel, Window
 	daily_login_check()
 	captcha_check()
+	logged_out_check()
+}
+
+logged_out_check() {
+	return False
 }
 
 daily_login_check() {
@@ -46,7 +57,9 @@ captcha_check(id := -1) {
 		{
 			Click, %FoundX%, %FoundY%
 		}
-		Sleep, 2500
+		Sleep, 1000
+		Click, 435, 272 Left, 1
+		Sleep, 1500
 		Click, 557, 224 Left, 1
 		Sleep, 1000 ; Wait for captcha to submit before checking 
 		return captcha_check(id) ; If we failed the captcha, then recursively calling will find it 
