@@ -3,12 +3,48 @@
 
 #Include, core_captcha.ahk
 #Include, core_ocr.ahk
+#Include, core_combat.ahk
 
 global hk_ocr := "x"
+
+class Coordinate {
+	__New(x, y) {
+		this.x := x
+		this.y := y
+	}
+	
+	travel() {
+		move(this.x, this.y)
+	}
+
+	fight() {
+		move_and_fight(this.x, this.y)
+	}
+}
+
+class Portal {
+	__New(x_entrance, y_entrance, x_destination, y_destination) {
+		this.x_entrance := x_entrance
+		this.y_entrance := y_entrance
+		this.x_destination := x_destination
+		this.y_destination := y_destination
+	}
+
+	travel(tolerance:=0) {
+		portal_move(this.x_destination, this.y_destination, this.x_entrance, this.y_entrance, tolerance)
+	}
+}
+
+walk_path(path, tolerance:=0) {
+	for each, c in path {
+		c.travel(tolerance)
+	}
+}
 
 get_coordinate() {
 	WinActivate, RPG MO - Early Access
 	CoordMode, Pixel, Window
+	clipboard := ""
 	ImageSearch, x_l, y_l, 461, 25, 590, 54, %A_WorkingDir%\img\interface\coordinate_left.png
 	e1 := ErrorLevel
 	ImageSearch, x_r, y_r, 480, 32, 620, 49, *5 %A_WorkingDir%\img\interface\coordinate_right.png
@@ -26,8 +62,7 @@ get_coordinate() {
 	y_l := y_l + 9 ; Bottom y bound
 	y_r := y_r - 8 ; Top y bound 
 
-	i = 0
-	While (Clipboard = "" and i < 5) {
+	While (Clipboard = "" and A_Index < 5) {
 		Click, %x_l%, %y_l%, 0
 		Send, {LAlt Down}
 		send, %hk_ocr%
@@ -35,7 +70,6 @@ get_coordinate() {
 		Sleep, 100
 		Click, %x_r%, %y_r%, Left, 1
 		Sleep, 100
-		i := i + 1
 	}
 
 	coordinate := RegExReplace(clipboard, "[()]", "")
@@ -44,25 +78,10 @@ get_coordinate() {
 	return % coordinate	
 }
 
-;;; DEPRECATED, DO NOT USE ;;;
-get_coordinate2() {
-	WinActivate, RPG MO - Early Access
-	newline := "`n"
-	Click, 530, 46, 0 ; MANUALLY CHANGE AS NEEDED
-	Send, {LALt Down}
-	send, %hk_ocr%
-	Send, {LAlt Up}
-	Click, 577, 31, Left, 1 ; MANUALLY CHANGE AS NEEDED
-	sleep, 250
-	coordinate := RegExReplace(clipboard, "[()]", "")
-	StringReplace , coordinate, coordinate, %A_Space%,,All
-	clipboard := "" ; reset the clipboard
-	return % coordinate
-}
-
-move(x, y) {
-	; Moves the player character to the coordinate (x, y).
-	print("[TASK]: Move to position (" . x . ", " . y . ")")
+portal_move(x_destination, y_destination, x_portal, y_portal, tolerance:=0) {
+	; Moves the player character using direction until the
+	; player character reaches (x, y). 
+	print("[TASK]: Moving to position (" . x_portal . ", " . y_portal . ")")
 	prev_pos := StrSplit("0,0")
 	curr_pos := StrSplit("-1,0")
 	failure_count := 0
@@ -75,18 +94,21 @@ move(x, y) {
 
 			print("Current Position: (" . curr_pos[1] . ", " . curr_pos[2] ")", 1)
 
-			if (curr_pos[1] = x and curr_pos[2] = y) {
+			; Player character is in the correct location. Exit loop.
+			if (curr_pos[1] = x_destination and curr_pos[2] = y_destination) {
 				break
 			}
 
+			; Player character did not move.
 			if (prev_pos[1] = curr_pos[1] and prev_pos[2] = curr_pos[2]) {
 				print("[WARNING]: No movement detected. Count: " . failure_count, 1)
 				failure_count := failure_count - 1
 			}
 
-			if (failure_count <= 0 and (curr_pos[1] != x or curr_pos[2] != y)) {
-				x_offset := x - curr_pos[1] ; the number of x and y tiles 
-				y_offset := y - curr_pos[2] ; to traverse
+			; Move.
+			if (failure_count <= 0 and (abs(curr_pos[1] - x_destination) > tolerance or abs(curr_pos[2] - y_destination) > tolerance)) {
+				x_offset := x_portal - curr_pos[1] ; the number of x and y tiles 
+				y_offset := y_portal - curr_pos[2] ; to traverse
 
 				north_x := y_offset * 26.9  ; pixel offset for y axis 
 				north_y := y_offset * -14.3 ; movement 
@@ -96,18 +118,31 @@ move(x, y) {
 
 				cx := player_x + north_x + east_x ; absolute mouse 
 				cy := player_y + north_y + east_y ; position
-				print("Clicking @ "  . cx . ", " . cy, 1)
-				;Sleep, 500
-				Click, %cx%, %cy%, Left, 1
+
+				window_position := activate_window() ; Returns [width, height]
+				if (cx >= 0 and cx <= window_position[1] and cy >= 0 and cy <= window_position[2]) {
+					print("Clicking @ "  . cx . ", " . cy, 1)
+					Click, %cx%, %cy%, Left, 1
+				} else {
+					print("[WARNING]: Click destination " . cx . ", " . cy . " out of bounds")
+				}
 				failure_count := 1
 			}
 		} else {
 			print("[WARNING]: Could not detect position", 1)
 		}
-		Sleep, 300
 		hazard_check()
 	}
-	print("[SUCCESS]: Moved to (" . x . ", " . y . ")")
+
+	if (x_destination != x_portal and y_destination != y_portal) {
+		print("[SUCCESS]: Moved through portal to (" . x_destination . ", " . y_destination . ")")
+	} else {
+		print("[SUCCESS]: Moved to location (" . x_destination . ", " . y_destination . ")")
+	}
+}
+
+move(x, y, tolerance:=0) {
+	portal_move(x, y, x, y, tolerance)
 }
 
 relative_click(x, y) {
