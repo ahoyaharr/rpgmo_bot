@@ -2,6 +2,15 @@
 #Include, lib\console.ahk
 
 #Include, core_captcha.ahk
+#Include, core_movement.ahk
+
+move_and_fight(x, y, eat_attempts:=3) {
+	move(x, y, 1)
+	if (wait_begin_combat()) {
+		return complete_combat() and eat(eat_attempts)
+	}
+	return False
+}
 
 attempt_combat(k, direction) {
 	%direction%(1)
@@ -10,7 +19,7 @@ attempt_combat(k, direction) {
 	}
 }
 
-wait_begin_combat(k) {
+wait_begin_combat(k:=1) {
 	print("ALERT: Waiting for combat to begin")
 	CoordMode, Pixel, Window
 	Loop
