@@ -1,9 +1,27 @@
 main(profile) {
 	initialise()
-	monsters = sapphire_dragon
+	path := sapphire_dragon
 	count := 0
 	start_time := A_TickCount 
 	currentWorld := 1
+
+	dorpat_to_dungeon1 := [new Coordinate(20, 27)
+						  ,new Coordinate(19, 36)
+						  ,new Coordinate(19, 46)
+						  ,new Coordinate(20, 57)
+						  ,new Coordinate(18, 66)
+						  ,new Coordinate(18, 77)
+						  ,new Coordinate(21, 85)
+						  ,new Coordinate(25, 90)
+						  ,new Portal(25, 88, 23, 88)]
+
+	dragon_path := [new Coordinate(23, 90), new Coordinate(24, 89), new Coordinate(26, 90)
+					,new Coordinate(27, 89), new Coordinate(28, 87), new Coordinate(27, 87)
+					,new Coordinate(24, 86), new Coordinate(25, 85), new Coordinate(28, 84)
+					,new Coordinate(28,81), new Coordinate(27, 80), new Coordinate(25, 75)
+					,new Coordinate(21, 75), new Coordinate(18, 75), new Coordinate(18, 82)
+					,new Coordinate(18, 84),new Coordinate(15, 87), new Coordinate(16, 89)
+					,new Coordinate(17, 92), new Coordinate(19, 93), new Coordinate(20, 90)]
 
 	print("[ALERT]: Routine loaded. Fighting " . monsters)
 	Loop {
@@ -13,39 +31,25 @@ main(profile) {
 		deposit_all()
 		withdraw("dorpat_teleport")
 		sleep, 2500
-		withdraw("cooked_white_shark")
+		withdraw("cooked_eel")
 		sleep, 2500
 
 		; Move to Dungeon 1
-		move(20, 27)
-		move(19, 36)
-		move(19, 46)
-		move(20, 57)
-		move(18, 66)
-		move(18, 77)
-		move(21, 85) ; Will have to fight
-		move(25, 89) 
-		wait_begin_combat(3) 
-		complete_combat()
-		move_south(1) ; Enter Dungeon 1
-		sleep, 2500
+		walk_path(dorpat_to_dungeon1)
 
 		print("[ALERT]: Beginning to fight " . monsters)
 		Loop {
-			hazard_check()
-			m := StrSplit(monsters, ",")
-
-			Loop % m.MaxIndex() {
-			    t := m[a_index]
-			    monster = %A_WorkingDir%\img\monsters\%t%.png
-				if (attack_nearest(monster) != 0) {
-					if (wait_begin_combat(7)) {  ; return 0 if combat begins
-						complete_combat(20)
+			for each, dragon_coordinate in dragon_path {
+				if (!eat(2)) {
+					break
+				}
+				dragon_coordinate.travel()
+				if (wait_begin_combat(2)) {
+					if (complete_combat()) {
 						count := count + 1
 						print("[STATUS]: " . count . " kills in " . FormatSeconds(A_TickCount - start_time)) 
 					}
-					break
-				} 
+				}
 			}
 		} until (!eat(10)) ; Loop until the player is hurt and fails to eat.
 
