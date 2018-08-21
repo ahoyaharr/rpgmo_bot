@@ -18,11 +18,28 @@ class Coordinate {
 	}
 
 	fight() {
+		return move_and_fight(this.x, this.y, 0)
+	}
+}
+
+class CombatCoordinate extends Coordinate {
+	; This class is for when the player needs to fight a monster to continue traveling.
+	travel() {
 		move_and_fight(this.x, this.y)
+		Sleep, 500
+		CoordMode, Pixel, Window
+		ImageSearch, x, y, 345, 172, 475, 293, %A_WorkingDir%\img\interface\loot_crate.png
+		If (!ErrorLevel) {
+			print("[ALERT] Detected loot crate. Destroying.")
+			Click, %x%, %y%, Right, 1
+			Sleep, 500
+			Click, Rel 10, 50 Left, 1
+		}
 	}
 }
 
 class Portal {
+	; This class is for when the player needs to traverse a portal to continue traveling.
 	__New(x_entrance, y_entrance, x_destination, y_destination) {
 		this.x_entrance := x_entrance
 		this.y_entrance := y_entrance
@@ -35,9 +52,16 @@ class Portal {
 	}
 }
 
-walk_path(path, tolerance:=0) {
-	for each, c in path {
-		c.travel(tolerance)
+walk_path(path, tolerance:=0, reversed:=False) {
+	if (!reversed) {
+		for each, c in path {
+			c.travel(tolerance)
+		}
+	} else {
+		index := path.length()
+		while (index--) {
+			path[index].travel(tolerance)
+		}
 	}
 }
 
@@ -95,7 +119,7 @@ portal_move(x_destination, y_destination, x_portal, y_portal, tolerance:=0) {
 			print("Current Position: (" . curr_pos[1] . ", " . curr_pos[2] ")", 1)
 
 			; Player character is in the correct location. Exit loop.
-			if (curr_pos[1] = x_destination and curr_pos[2] = y_destination) {
+			if (abs(curr_pos[1] - x_destination) <= tolerance and abs(curr_pos[2] - y_destination) <= tolerance) {
 				break
 			}
 
@@ -105,7 +129,6 @@ portal_move(x_destination, y_destination, x_portal, y_portal, tolerance:=0) {
 				failure_count := failure_count - 1
 			}
 
-			; Move.
 			if (failure_count <= 0 and (abs(curr_pos[1] - x_destination) > tolerance or abs(curr_pos[2] - y_destination) > tolerance)) {
 				x_offset := x_portal - curr_pos[1] ; the number of x and y tiles 
 				y_offset := y_portal - curr_pos[2] ; to traverse
