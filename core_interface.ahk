@@ -28,10 +28,9 @@ close_chest() {
 		print("[TASK]: Close chest")
 		Loop {
 			Click, 606, 135 Left, 1
-			Sleep, 1000
+			Sleep, 500
 		} Until (!chest_is_open())
 	}
-	sleep, 250
 	print("[SUCCESS]: Chest closed")
 }
 
@@ -40,6 +39,7 @@ withdraw(item) {
 	p = %A_WorkingDir%\img\items\%item%.png
 	c = "r""RPG MO - Early Access"" k{Click}{z}"
 	r := FindClick(p, c)
+	sleep, 250
 	CoordMode, Pixel, Window
 	CoordMode, Mouse, Window
 	if (r = "0") {
@@ -75,7 +75,7 @@ cancel_action() {
 
 harvest(direction) {
 	print("[TASK]: Harvest resource")
-	toggle_bag()
+	open_bag(True)
 	Loop {
 		hazard_check()
 		%direction%(1)
@@ -89,41 +89,43 @@ harvest(direction) {
 		ImageSearch, FoundX, FoundY, 815, 341, 859, 382, %A_WorkingDir%\img\interface\inventory_box.png
 		pet_inventory_full := ErrorLevel
 	} Until (main_inventory_full and pet_inventory_full)
-	toggle_bag()
+	open_bag(False)
 	cancel_action()
 	print("[SUCCESS]: Resources harvested")
 }
 
 process(direction, item) {
 	print("[TASK]: Process " . item)
-	toggle_bag()
-	if (use_item(item, False)) {
+	open_bag(True)
+	if (use_item(item)) {
 		Loop {
 			hazard_check()
 			%direction%(1)
 			Sleep, 2500
-		} Until (!has_item(item, False))
+		} Until (!has_item(item))
 	}
-	toggle_bag()
+	open_bag(False)
 }
 
 has_item(item, toggle:=True) {
-	if (toggle) {
-		toggle_bag()
-	}
+	; Toggle will restore the bag state after the fn completes
+	bag_status := bag_is_open()
+	open_bag(True)
 	ImageSearch, FoundX, FoundY, 565, 80, 858, 282, %A_WorkingDir%\img\items\%item%.png
+	result := !ErrorLevel ; Need to save to variable because open_bag will modify ErrorLevel
 	if (toggle) {
-		toggle_bag()
+		open_bag(bag_status)
 	}	
-	return !ErrorLevel ; ErrorLevel is 0 when imageSearch is successful
+	return result ; ErrorLevel is 0 when imageSearch is successful
 }
 
 use_item(item, toggle:=True) {
+	; Toggle will restore the bag state after the fn completes
 	success := False
 	print("[TASK]: Use " . item)
-	if (toggle) {
-		toggle_bag()
-	}	ImageSearch, FoundX, FoundY, 565, 80, 858, 282, %A_WorkingDir%\img\items\%item%.png
+	bag_status := bag_is_open()
+	open_bag(True)
+	ImageSearch, FoundX, FoundY, 565, 80, 858, 282, %A_WorkingDir%\img\items\%item%.png
 	if (!ErrorLevel) {
 		Click, %FoundX%, %FoundY%
 		success := True
@@ -134,9 +136,14 @@ use_item(item, toggle:=True) {
 	Sleep, 250
 	hazard_check()
 	if (toggle) {
-		toggle_bag()
+		open_bag(bag_status)
 	}
 	return success
+}
+
+bag_is_open() {
+	ImageSearch, FoundX, FoundY, 844, 266, 859, 287, %A_WorkingDir%\img\interface\bag_is_open.png
+	return !ErrorLevel
 }
 
 is_potted(potion) {
@@ -144,6 +151,14 @@ is_potted(potion) {
 	return ErrorLevel
 }
 
+open_bag(action) {
+	; Opens bag if action := True, otherwise closes the bag.
+	while (bag_is_open() != action) {
+		toggle_bag()
+	}
+}
+
+; Do not use blind fns in public context
 toggle_bag() {
 	send b
 	Sleep, 250
