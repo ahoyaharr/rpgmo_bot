@@ -95,7 +95,8 @@ screenshot_captcha() {
 
 report_error(id) {
 	print("Reporting failed captcha; id =" . id)
-	RunWait, %A_WorkingDir%\captcha\deathbycaptcha.exe -l Solzhenitsyn -p ragnarok88 -n %id%
+	credentials := load_credentials()
+	RunWait, % A_WorkingDir . "\captcha\deathbycaptcha.exe -l " . credentials[1] . " -p " credentials[2] . " -n " . id
 	print("Reported")
 }
 
@@ -104,9 +105,13 @@ submit_captcha() {
 	CoordMode, Pixel, Window
 	ImageSearch, FoundX, FoundY, 197, 142, 674, 435, C:\Users\a\AppData\Roaming\MacroCreator\Screenshots\Screen_20171227223827.png
 	If (ErrorLevel = 0) {
+		print("found mystery image, clicking...!")
+		MsgBox, % "look at me"
 		Click, %FoundX%, %FoundY%
 	}
-	RunWait, %A_WorkingDir%\captcha\deathbycaptcha.exe -l Solzhenitsyn -p ragnarok88 -c %A_WorkingDir%\captcha\captcha.png -t 30
+	credentials := load_credentials()
+	RunWait, % A_WorkingDir . "\captcha\deathbycaptcha.exe -l " . credentials[1] . " -p " . credentials[2] . " -c " . A_WorkingDir . "\captcha\captcha.png -t 30"
+	print(A_WorkingDir . "\captcha\deathbycaptcha.exe -l " . credentials[1] . " -p " . credentials[2] . " -c " . A_WorkingDir . "\captcha\captcha.png -t 30")
 	print("Captcha solution returned", 2)
 }
 
@@ -124,4 +129,13 @@ load_captcha_solution() {
 
 	print("Solution to captcha is " . answer, 2)
 	return % answer . "," . key
+}
+
+load_credentials() {
+	credentials := []
+	Loop, read, %A_WorkingDir%\captcha\credentials.txt
+	{
+	    credentials.push(A_LoopReadLine)
+	}
+	return credentials
 }
