@@ -79,7 +79,6 @@ harvest(direction) {
 	Loop {
 		hazard_check()
 		%direction%(1)
-		;hazard_check()
 		Sleep, 1000
 		ImageSearch, FoundX, FoundY, 817, 226, 859, 267, %A_WorkingDir%\img\interface\inventory_box.png
 		If (ErrorLevel) {
@@ -172,21 +171,39 @@ destroy_all() {
 	send, p
 	Sleep, 1000
 	Send, {enter}
+	close_chat()
 }
 
 send_command(command, argument) {
-	CoordMode, Pixel, Window
-	Loop {
-		Send, {Enter}
-		Sleep, 250
-		ImageSearch, FoundX, FoundY, 47, 467, 85, 486, %A_WorkingDir%\img\interface\chat_bar.png
-	} Until (!ErrorLevel)
-
+	open_chat()
 	full_command := "/" . command . " " . argument
 	print("[ALERT] Sending command: '" . full_command . "'")
 	Send, %full_command%
 	Sleep, 250
 	Send, {Enter}
+}
+
+chat_is_open() {
+	CoordMode, Pixel, Window
+	ImageSearch, FoundX, FoundY, 47, 467, 85, 486, %A_WorkingDir%\img\interface\chat_bar.png
+	return !ErrorLevel
+}	
+
+close_chat() {
+	if (chat_is_open()) {
+		Loop {
+			Send, {Enter}
+			Sleep, 250
+		} Until (!chat_is_open())
+	}
+	return !chat_is_open()
+}
+
+open_chat() {
+	Loop {
+		Send, {Enter}
+		Sleep, 250
+	} Until (chat_is_open())
 }
 
 main_menu_is_open() {
