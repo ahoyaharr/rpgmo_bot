@@ -1,4 +1,3 @@
-
 main(profile) {
 	initialise()
 	print("[ALERT]: Power mining routine loaded.")

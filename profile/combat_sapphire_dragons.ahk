@@ -1,6 +1,6 @@
 main(profile) {
 	initialise()
-	path := sapphire_dragon
+	path := 
 	count := 0
 	start_time := A_TickCount 
 	currentWorld := 1
