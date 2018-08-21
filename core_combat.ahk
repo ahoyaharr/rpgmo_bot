@@ -4,10 +4,11 @@
 #Include, core_captcha.ahk
 #Include, core_movement.ahk
 
-move_and_fight(x, y, eat_attempts:=3) {
-	move(x, y, 1)
-	if (wait_begin_combat()) {
-		return complete_combat() and eat(eat_attempts)
+move_and_fight(x, y, tolerance:=1, eat_attempts:=3) {
+	move(x, y, tolerance)
+	if (wait_begin_combat(2)) {
+		complete_combat()
+		return eat(eat_attempts)
 	}
 	return False
 }
@@ -61,7 +62,8 @@ complete_combat(k:=999999) {
 	Loop
 	{
 	    Sleep, 100
-	    PixelSearch, FoundX, FoundY, 88, 73, 113, 110, 0x48B629, 0, Fast RGB
+	    ;PixelSearch, FoundX, FoundY, 88, 73, 113, 110, 0x48B629, 0, Fast RGB
+	    PixelSearch, FoundX, FoundY, 88, 72, 98, 95, 0x4EC42A, 0, Fast RGB
 	}
 	Until (ErrorLevel != 0 or A_Index > (k * 10))
 	If (ErrorLevel) {
