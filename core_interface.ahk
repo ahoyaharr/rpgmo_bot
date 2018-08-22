@@ -27,8 +27,9 @@ close_chest() {
 	if (chest_is_open()) {
 		print("[TASK]: Close chest")
 		Loop {
+			Sleep, 1000
 			Click, 606, 135 Left, 1
-			Sleep, 500
+			Sleep, 1000
 		} Until (!chest_is_open())
 	}
 	print("[SUCCESS]: Chest closed")
@@ -101,7 +102,7 @@ process(direction, item) {
 		Loop {
 			hazard_check()
 			%direction%(1)
-			Sleep, 2500
+			Sleep, 1000
 		} Until (!has_item(item))
 	}
 	open_bag(False)
