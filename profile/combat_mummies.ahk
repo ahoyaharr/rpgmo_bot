@@ -1,4 +1,4 @@
-main(profile) {
+main() {
 	initialise()
 	count := 0
 	start_time := A_TickCount 

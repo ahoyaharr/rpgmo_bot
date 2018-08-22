@@ -1,4 +1,4 @@
-main(profile) {
+main() {
 	initialise()
 	print("[ALERT]: Routine loaded. Cutting Blue Palms in the Woodcutting Guild.")
 

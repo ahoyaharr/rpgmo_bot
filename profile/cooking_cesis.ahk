@@ -1,10 +1,10 @@
-main(profile) {
+main() {
 	initialise()
 	print("[ALERT]: Routine loaded. Cooking at Cesis.")
 	count := 1
 	start_time := A_TickCount 
 
-	fish = raw_salmon,raw_lion_fish,raw_bass,raw_angel_fish,raw_eel
+	fish = raw_swordfish, raw_squalidae
 
 	Loop {
 		print("[ALERT] Cycle " . count . " begins @ " . FormatSeconds(A_TickCount - start_time))
