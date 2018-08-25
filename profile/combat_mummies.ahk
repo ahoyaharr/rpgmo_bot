@@ -4,7 +4,7 @@ main() {
 	start_time := A_TickCount 
 	currentWorld := 1
 
-	food := "cooked_eel"
+	food := "cooked_hammer_shark"
 	teleport := "reval_teleport"
 
 	reval_to_pernau := [new Coordinate(16, 19), new Coordinate(28, 22), new Coordinate(34, 31)
@@ -19,13 +19,6 @@ main() {
 						 ,new Coordinate(60, 54), new Coordinate(51, 54), new CombatCoordinate(46, 54)
 						 ,new CombatCoordinate(44, 56), new CombatCoordinate(41, 56)
 						 ,new Portal(40, 57, 35, 41)]
-
-	; desert_to_mummies := [new CombatCoordinate(35, 39), new CombatCoordinate(35, 36), new CombatCoordinate(35, 33)
-	; 					, new CombatCoordinate(34, 30), new CombatCoordinate(38, 31), new CombatCoordinate(39, 33)
-	; 					, new CombatCoordinate(40, 34), new CombatCoordinate(47, 33), new CombatCoordinate(51, 33)
-	; 					, new CombatCoordinate(55, 33), new CombatCoordinate(56, 36), new CombatCoordinate(60, 32)
-	; 					, new CombatCoordinate(58, 30), new CombatCoordinate(60, 24), new CombatCoordinate(57, 22)
-	; 					, new CombatCoordinate(57, 17), new Coordinate(56, 9)]	
 
 	desert_to_mummies := [new CombatCoordinate(35, 39), new CombatCoordinate(35, 36), new CombatCoordinate(35, 33)
 						, new CombatCoordinate(34, 30), new CombatCoordinate(38, 31), new Coordinate(37, 36)
@@ -68,7 +61,7 @@ main() {
 					break 
 				}
 				count := count + 1
-				print("[STATUS]: " . count . " kills in " . FormatSeconds(A_TickCount - start_time)) 
+				print("[STATUS]: " . count . " kills in " . formatted_time(start_time, A_TickCount)) 
 				
 				if (mod(count, 100) == 0) {
 					destroy_all()

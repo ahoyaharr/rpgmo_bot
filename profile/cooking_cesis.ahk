@@ -4,10 +4,10 @@ main() {
 	count := 1
 	start_time := A_TickCount 
 
-	fish = raw_swordfish, raw_squalidae
+	fish = raw_cowfish,raw_hammer_shark,raw_reef_manta_ray
 
 	Loop {
-		print("[ALERT] Cycle " . count . " begins @ " . FormatSeconds(A_TickCount - start_time))
+		print("[ALERT] Cycle " . count . " begins @ " . formatted_time(start_time, A_TickCount))
 
 		; Move to chest 
 		move(61, 62) 
