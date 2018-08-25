@@ -1,4 +1,5 @@
 #Include, lib\console.ahk
+#Include, core_interface.ahk
 
 activate_window() {
 	window_name = RPG MO - Early Access
@@ -12,6 +13,7 @@ hazard_check() {
 	daily_login_check()
 	captcha_check()
 	logged_out_check()
+	close_chat()
 }
 
 logged_out_check() {
