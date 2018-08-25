@@ -9,12 +9,13 @@ distance_sort(v1, v2) {
 	return distance_from_base(v1) - distance_from_base(v2)
 }
 
-FormatSeconds(NumberOfSeconds)  ; Convert the specified number of seconds to hh:mm:ss format.
+formatted_time(start, current)  ; Convert the specified number of seconds to hh:mm:ss format.
 {
+    ms := (current - start) // 1000
     time = 19990101  ; *Midnight* of an arbitrary date.
-    time += %NumberOfSeconds% / 1000, seconds
+    time += %ms%, seconds
     FormatTime, mmss, %time%, mm:ss
-    return NumberOfSeconds//3600 ":" mmss
+    return ms//3600 ":" mmss
     /*
     ; Unlike the method used above, this would not support more than 24 hours worth of seconds:
     FormatTime, hmmss, %time%, h:mm:ss
