@@ -4,6 +4,7 @@
 #Include, core_captcha.ahk
 #Include, core_ocr.ahk
 #Include, core_combat.ahk
+#Include, core_interface.ahk
 
 global hk_ocr := "x"
 
@@ -102,19 +103,25 @@ get_coordinate() {
 	return % coordinate	
 }
 
-portal_move(x_destination, y_destination, x_portal, y_portal, tolerance:=0) {
+portal_move(x_destination, y_destination, x_portal, y_portal, tolerance:=0, known_pos:=False) {
 	; Moves the player character using direction until the
 	; player character reaches (x, y). 
+	open_bag(False)
 	print("[TASK]: Moving to position (" . x_portal . ", " . y_portal . ")")
-	prev_pos := StrSplit("0,0")
-	curr_pos := StrSplit("-1,0")
-	failure_count := 0
+	prev_pos := [0, 0]
+	curr_pos := [0, 0]
+	failure_count := 1
+	failsafe_count := 0
 	Loop {
 		pos_str := get_coordinate()
-
+		; Continue only if get_coordinate successful
 		if (pos_str != "") {
-			prev_pos := curr_pos.Clone()
-			curr_pos := StrSplit(pos_str, ",")
+			prev_pos := curr_pos.Clone() ; Cache old position 
+			curr_pos := StrSplit(pos_str, ",") ; Update new position
+
+			if (prev_pos[1] = 0 and prev_pos[2] = 0) {
+				prev_pos := curr_pos.Clone() ; On the first run, prev=current
+			}
 
 			print("Current Position: (" . curr_pos[1] . ", " . curr_pos[2] ")", 1)
 
@@ -123,13 +130,16 @@ portal_move(x_destination, y_destination, x_portal, y_portal, tolerance:=0) {
 				break
 			}
 
-			; Player character did not move.
-			if (prev_pos[1] = curr_pos[1] and prev_pos[2] = curr_pos[2]) {
-				print("[WARNING]: No movement detected. Count: " . failure_count, 1)
-				failure_count := failure_count - 1
-			}
+			has_moved := !(prev_pos[1] = curr_pos[1] and prev_pos[2] = curr_pos[2])
 
-			if (failure_count <= 0 and (abs(curr_pos[1] - x_destination) > tolerance or abs(curr_pos[2] - y_destination) > tolerance)) {
+			; print(!has_moved, 1)
+			; if (has_moved) {
+			; 	print("prevpos1=" . prev_pos[1] . ", currpos1=" . curr_pos[1] . ", prevpos2=" . prev_pos[2] . ", currpos2=" curr_pos[2], 2)
+			; }
+			; print(failure_count > 0, 1)
+
+			; Click again only if the player is not currently moving. 
+			if (!has_moved and failure_count > 0) { ; and (abs(curr_pos[1] - x_destination) > tolerance or abs(curr_pos[2] - y_destination) > tolerance)
 				x_offset := x_portal - curr_pos[1] ; the number of x and y tiles 
 				y_offset := y_portal - curr_pos[2] ; to traverse
 
@@ -144,15 +154,34 @@ portal_move(x_destination, y_destination, x_portal, y_portal, tolerance:=0) {
 
 				window_position := activate_window() ; Returns [width, height]
 				if (cx >= 0 and cx <= window_position[1] and cy >= 0 and cy <= window_position[2]) {
+					failure_count := 0
 					print("Clicking @ "  . cx . ", " . cy, 1)
 					Click, %cx%, %cy%, Left, 1
 				} else {
+					failure_count := failure_count + 1
 					print("[WARNING]: Click destination " . cx . ", " . cy . " out of bounds")
 				}
-				failure_count := 1
+			} else if (!has_moved) {
+				failure_count := failure_count + 1
 			}
 		} else {
-			print("[WARNING]: Could not detect position", 1)
+			failure_count := failure_count + 1
+			print("[WARNING]: Could not detect position. Failed at moving " . failure_count . " times.", 1)
+		}
+
+		; If failure exceeds threshold, try moving randomly.
+		if (failure_count > 10) {
+			movement_options := [north, south, east, west]
+			Random, index, 1, % movement_options.MaxIndex()
+			option := movement_options[index]
+			%option%()
+			failure_count := 0
+			failsafe_count := failsafe_count + 1
+		}
+
+		if (failsafe_count > 10) {
+			print("[WARNING] Failsafe activated 10 times. Pausing.")
+			Pause
 		}
 		hazard_check()
 	}
@@ -186,19 +215,19 @@ relative_move(x, y) {
 	Sleep % (abs(x) + abs(y)) * 250
 }
 
-move_north(k) {
+move_north(k:=1) {
 	relative_move(0, k)
 }
 
-move_south(k) {
+move_south(k:=1) {
 	relative_move(0, -k)
 }
 
-move_east(k) {
+move_east(k:=1) {
 	relative_move(k, 0)
 }
 
-move_west(k) {
+move_west(k:=1) {
 	relative_move(-k, 0)
 }
 
