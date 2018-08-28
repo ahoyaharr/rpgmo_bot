@@ -83,7 +83,7 @@ get_coordinate() {
 	}
 
 	x_l := x_l - 3 ; Left x bound 
-	x_r := x_r + 7 ; Right x bound 
+	x_r := x_r + 10 ; Right x bound 
 	y_l := y_l + 9 ; Bottom y bound
 	y_r := y_r - 8 ; Top y bound 
 
