@@ -9,14 +9,14 @@ main() {
 	potion = potion_of_mining_superior
 	teleport = rakblood_teleport
 
-	rakblood_to_ore := [new Coordinate(30, 71), new Coordinate(25, 62), new Coordinate(18, 55)
+	rakblood_to_ore := [new Coordinate(37, 65), new Coordinate(30, 71), new Coordinate(25, 62), new Coordinate(18, 55)
 					  , new CombatCoordinate(14, 50), new Coordinate(13, 38), new Coordinate(10, 30)
 					  , new Coordinate(7, 20)]
 
+	move(37, 65)
 	Loop {
 		use_potion := False
 		print("[ALERT] Cycle " . count . " begins @ " . formatted_time(start_time, A_TickCount))
-		move(37, 65)
 		open_chest(east)
 		deposit_all()
 		if (enable_potion_use and is_potted(potion)) {
