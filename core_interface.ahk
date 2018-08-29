@@ -74,8 +74,13 @@ cancel_action() {
 	}
 }
 
-harvest(direction) {
-	print("[TASK]: Harvest resource")
+harvest(direction, count:=False, time:=False) {
+	if (count and time) {
+		status := "[ALERT] Harvesting inventory " . count . " begins @ " . time
+	} else {
+		status := "[TASK]: Harvest resource."
+	}
+	print(status)
 	open_bag(True)
 	Loop {
 		hazard_check()
@@ -155,6 +160,7 @@ is_potted(potion) {
 open_bag(action) {
 	; Opens bag if action := True, otherwise closes the bag.
 	while (bag_is_open() != action) {
+		hazard_check()
 		toggle_bag()
 	}
 }
