@@ -7,6 +7,9 @@ main() {
 	food := "cooked_hammer_shark"
 	teleport := "reval_teleport"
 
+	spell_usage := True
+	spells := ["earth_wave", "water_wave", "fire_wave"]
+
 	reval_to_pernau := [new Coordinate(16, 19), new Coordinate(28, 22), new Coordinate(34, 31)
 						, new Coordinate(39, 40), new Coordinate(45, 49), new Coordinate(52, 57)
 						, new Coordinate(58, 66), new Coordinate(68, 70), new Coordinate(78, 75)
@@ -41,6 +44,20 @@ main() {
 		move(14, 31)
 		open_chest(north)
 		deposit_all()
+		if (spell_usage) {
+			open_bag(True)
+			for each, spell in spells {
+				print("[ALERT] Reloading spellbook with " . spell)
+				withdraw(spell)
+				loop, 20 {
+					if (!use_item(spell)) {
+						break
+					}
+				}
+				deposit_all()
+			}
+			open_bag(False)
+		}
 		withdraw(teleport)
 		sleep, 2500
 		withdraw(food)
