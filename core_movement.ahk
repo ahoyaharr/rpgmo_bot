@@ -14,8 +14,8 @@ class Coordinate {
 		this.y := y
 	}
 	
-	travel() {
-		move(this.x, this.y)
+	travel(tolerance:=0, previous_position:=False) {
+		return move(this.x, this.y, tolerance, previous_position)
 	}
 
 	fight() {
@@ -25,8 +25,8 @@ class Coordinate {
 
 class CombatCoordinate extends Coordinate {
 	; This class is for when the player needs to fight a monster to continue traveling.
-	travel() {
-		move_and_fight(this.x, this.y)
+	travel(tolerance:=1, previous_position:=False) {
+		rv := move_and_fight(this.x, this.y, 1, 3, previous_position)
 		Sleep, 500
 		CoordMode, Pixel, Window
 		ImageSearch, x, y, 345, 172, 475, 293, %A_WorkingDir%\img\interface\loot_crate.png
@@ -36,6 +36,8 @@ class CombatCoordinate extends Coordinate {
 			Sleep, 500
 			Click, Rel 10, 50 Left, 1
 		}
+		return False ; This is for position caching. Cannot currently cache position of combatcoordinate.
+		; Interferes with combat scripts.
 	}
 }
 
@@ -48,20 +50,22 @@ class Portal {
 		this.y_destination := y_destination
 	}
 
-	travel(tolerance:=0) {
-		portal_move(this.x_destination, this.y_destination, this.x_entrance, this.y_entrance, tolerance)
+	travel(tolerance:=0, previous_position:=False) {
+		return portal_move(this.x_destination, this.y_destination, this.x_entrance, this.y_entrance, tolerance, previous_position)
 	}
 }
 
 walk_path(path, tolerance:=0, reversed:=False) {
+	previous_position := False
+
 	if (!reversed) {
 		for each, c in path {
-			c.travel(tolerance)
+			previous_position := c.travel(tolerance, previous_position)
 		}
 	} else {
 		index := path.length()
 		while (index--) {
-			path[index].travel(tolerance)
+			previous_position := path[index].travel(tolerance, previous_position)
 		}
 	}
 }
@@ -113,8 +117,14 @@ portal_move(x_destination, y_destination, x_portal, y_portal, tolerance:=0, know
 	failure_count := 1
 	failsafe_count := 0
 	Loop {
-		pos_str := get_coordinate()
-		; Continue only if get_coordinate successful
+		if (known_pos) { ; User can pass in the current position, if it is known.
+			pos_str := known_pos
+			known_pos := False ; Only the first position can be known.
+		} else { ; Otherwise, bot will look up the current coordinate.
+			pos_str := get_coordinate()
+		}
+
+		; Continue only if get_coordinate successful or position already known.
 		if (pos_str != "") {
 			prev_pos := curr_pos.Clone() ; Cache old position 
 			curr_pos := StrSplit(pos_str, ",") ; Update new position
@@ -191,10 +201,11 @@ portal_move(x_destination, y_destination, x_portal, y_portal, tolerance:=0, know
 	} else {
 		print("[SUCCESS]: Moved to location (" . x_destination . ", " . y_destination . ")")
 	}
+	return pos_str
 }
 
-move(x, y, tolerance:=0) {
-	portal_move(x, y, x, y, tolerance)
+move(x, y, tolerance:=0, previous_position:=False) {
+	return portal_move(x, y, x, y, tolerance, previous_position)
 }
 
 relative_click(x, y) {

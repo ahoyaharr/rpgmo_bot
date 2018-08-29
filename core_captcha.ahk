@@ -9,9 +9,10 @@ activate_window() {
 }
 
 hazard_check() {
+	activate_window()
 	CoordMode, Pixel, Window
-	daily_login_check()
 	captcha_check()
+	daily_login_check()
 	logged_out_check()
 	close_chat()
 }
