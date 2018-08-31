@@ -179,20 +179,20 @@ portal_move(x_destination, y_destination, x_portal, y_portal, tolerance:=0, know
 			print("[WARNING]: Could not detect position. Failed at moving " . failure_count . " times.", 1)
 		}
 
-		; If failure exceeds threshold, try moving randomly.
-		if (failure_count > 10) {
-			movement_options := [north, south, east, west]
-			Random, index, 1, % movement_options.MaxIndex()
-			option := movement_options[index]
-			%option%()
-			failure_count := 0
-			failsafe_count := failsafe_count + 1
-		}
+		; ; If failure exceeds threshold, try moving randomly.
+		; if (failure_count > 10) {
+		; 	movement_options := [north, south, east, west]
+		; 	Random, index, 1, % movement_options.MaxIndex()
+		; 	option := movement_options[index]
+		; 	%option%()
+		; 	failure_count := 0
+		; 	failsafe_count := failsafe_count + 1
+		; }
 
-		if (failsafe_count > 10) {
-			print("[WARNING] Failsafe activated 10 times. Pausing.")
-			Pause
-		}
+		; if (failsafe_count > 10) {
+		; 	print("[WARNING] Failsafe activated 10 times. Pausing.")
+		; 	Pause
+		; }
 		hazard_check()
 	}
 
