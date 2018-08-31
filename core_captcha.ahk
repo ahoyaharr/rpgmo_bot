@@ -18,7 +18,17 @@ hazard_check() {
 }
 
 logged_out_check() {
-	return False
+	while (main_menu_is_open()) {
+		Click, 270, 214 Left, 1
+		Sleep, 500
+		Random, y_val, 237, 255
+		Click, 265, %y_val% Left, 1
+		Sleep, 500
+		Click, 266, 323 Left, 1
+		Sleep 250
+		Send, {Enter}
+		Sleep, 2500
+	}
 }
 
 daily_login_check() {
