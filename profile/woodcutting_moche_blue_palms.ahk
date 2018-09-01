@@ -22,7 +22,7 @@ main() {
 
 		; Walk to guild
 		walk_path(chest_to_trees)
-		harvest(south)
+		harvest(south, count, formatted_time(start_time, A_TickCount))
 		walk_path(trees_to_chest)
 
 		count := count + 1

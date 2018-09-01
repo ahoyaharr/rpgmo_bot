@@ -31,7 +31,7 @@ main() {
 		if (use_potion) {
 			use_item(potion)
 		}
-		harvest(west)
+		harvest(west, count, formatted_time(start_time, A_TickCount))
 		Loop {
 			if (!use_item(teleport)) {
 				print("[WARNING]: could not find " . teleport . ", walking back instead")
@@ -39,6 +39,9 @@ main() {
 			}
 			sleep, 1000
 			curr_pos := StrSplit(get_coordinate(), ",")
+			if (abs(curr_pos[1] - 34) <= 4 and abs(curr_pos[2] - 68) <= 5) {
+				move(37, 65)
+			}
 		} Until (abs(curr_pos[1] - 34) <= 4 and abs(curr_pos[2] - 68) <= 5)
 		count := count + 1
 	}
