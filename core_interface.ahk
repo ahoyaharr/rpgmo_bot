@@ -3,6 +3,45 @@
 
 #Include, core_captcha.ahk
 
+shop_is_open() {
+	ImageSearch, FoundX, FoundY, 248, 117, 317, 154, %A_WorkingDir%\img\interface\shop.png
+	if (ErrorLevel) {
+		print("[STATUS] Shop is closed.", 1)
+		return False
+	} else {
+		print("[STATUS] Shop is open.", 1)
+		return True 
+	}
+}
+
+open_shop(direction) {
+	print("[TASK]: Opening shop.")
+	Loop { 
+		%direction%(1)
+	} 
+	Until (shop_is_open())
+	print("[SUCCESS]: Opened shop.")
+}
+
+buy_item(item, number) {
+	if (!shop_is_open()) {
+		print("[WARNING] Cannot buy " . item . "; shop is not open.")
+		return
+	}
+	ImageSearch, x, y, 253, 126, 625, 393, %A_WorkingDir%\img\items\%item%.png
+	If (!ErrorLevel) {
+		print("[TASK] Buying " . item . "(s) x" . number)
+		click, %x%, %y%
+		Loop, %number% {
+			Sleep, 75
+			Click, 302, 383 Left, 1
+			if (Mod(A_Index, 10) == 0) {
+				hazard_check()
+			}
+		}
+	}
+}
+
 chest_is_open() {
 	ImageSearch, FoundX, FoundY, 248, 117, 317, 154, %A_WorkingDir%\img\interface\chest.png
 	if (ErrorLevel) {
