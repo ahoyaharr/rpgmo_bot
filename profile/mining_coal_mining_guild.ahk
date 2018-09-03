@@ -19,24 +19,26 @@ main() {
 		
 		open_chest(south)
 		deposit_all()
-		withdraw(teleport)
+		; withdraw(teleport)
 
 		walk_path(to_trip)
 
 		harvest(north, count, formatted_time(start_time, A_TickCount))
 
-		Loop {
-			if (!use_item(teleport)) {
-				print("[WARNING]: could not find " . teleport . ", walking back instead")
-				walk_path(from_trip)
-			}
-			sleep, 1000
-			curr_pos := StrSplit(get_coordinate(), ",")
-			if (abs(curr_pos[1] - 20) <= 4 and abs(curr_pos[2] - 20) <= 5) {
-				move(22, 18)
-			}
+		walk_path(from_trip)
 
-		} Until (abs(curr_pos[1] - 20) <= 4 and abs(curr_pos[2] - 20) <= 5)
+		; Loop {
+		; 	if (!use_item(teleport)) {
+		; 		print("[WARNING]: could not find " . teleport . ", walking back instead")
+		; 		walk_path(from_trip)
+		; 	} 
+		; 	sleep, 5000
+		; 	curr_pos := StrSplit(get_coordinate(), ",")
+		; 	if (abs(curr_pos[1] - 20) <= 4 and abs(curr_pos[2] - 20) <= 5) {
+		; 		move(22, 18)
+		; 	}
+
+		; } Until (abs(curr_pos[1] - 20) <= 4 and abs(curr_pos[2] - 20) <= 5)
 		count := count + 1
 	}
 }
