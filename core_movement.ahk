@@ -86,7 +86,7 @@ get_coordinate() {
 		return False
 	}
 
-	x_l := x_l - 3 ; Left x bound 
+	x_l := x_l - 4 ; Left x bound 
 	x_r := x_r + 10 ; Right x bound 
 	y_l := y_l + 9 ; Bottom y bound
 	y_r := y_r - 8 ; Top y bound 
