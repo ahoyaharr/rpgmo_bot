@@ -1,4 +1,4 @@
-main(profile) {
+main() {
 	chest_to_fish := [new Portal(76, 32, 77, 32), new Coordinate(85, 28)]
 	fish_to_chest := [new Portal(80, 26, 80, 25), new Coordinate(70, 26), new Coordinate(70, 30)]
 
@@ -11,7 +11,7 @@ main(profile) {
 	move(70, 30) 
 
 	Loop {
-		print("[ALERT] Cycle " . count . " begins @ " . FormatSeconds(A_TickCount - start_time))
+		print("[ALERT] Cycle " . count . " begins @ " . formatted_time(start_time, A_TickCount))
 
 		; Move to chest 
 		
@@ -19,7 +19,7 @@ main(profile) {
 		deposit_all()
 
 		walk_path(chest_to_fish)
-		harvest(east)
+		harvest(east, count, formatted_time(start_time, A_TickCount))
 		walk_path(fish_to_chest)
 
 		count := count + 1
