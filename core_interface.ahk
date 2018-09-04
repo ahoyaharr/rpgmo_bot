@@ -3,6 +3,26 @@
 
 #Include, core_captcha.ahk
 
+forge_is_open() {
+	ImageSearch, FoundX, FoundY, 205, 156, 274, 181, %A_WorkingDir%\img\interface\forge.png
+	if (ErrorLevel) {
+		print("[STATUS] Forge is closed.", 1)
+		return False
+	} else {
+		print("[STATUS] Forge is open.", 1)
+		return True 
+	}
+}
+
+open_forge(direction) {
+	print("[TASK]: Opening forge.")
+	Loop { 
+		%direction%(1)
+	} 
+	Until (forge_is_open())
+	print("[SUCCESS]: Opened forge.")
+}
+
 shop_is_open() {
 	ImageSearch, FoundX, FoundY, 248, 117, 317, 154, %A_WorkingDir%\img\interface\shop.png
 	if (ErrorLevel) {
