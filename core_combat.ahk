@@ -6,7 +6,7 @@
 
 move_and_fight(x, y, tolerance:=1, eat_attempts:=3, previous_position:=False) {
 	rv := move(x, y, tolerance, previous_position)
-	if (wait_begin_combat(1)) {
+	if (wait_begin_combat(2)) {
 		complete_combat()
 		return eat(eat_attempts)
 	}

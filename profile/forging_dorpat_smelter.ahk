@@ -4,7 +4,7 @@ main() {
 	count := 1
 	start_time := A_TickCount 
 
-	ore = silver_chunk,iron_ore
+	ore = iron_ore
 
 	Loop {
 		print("[ALERT] Cycle " . count . " begins @ " . formatted_time(start_time, A_TickCount))
