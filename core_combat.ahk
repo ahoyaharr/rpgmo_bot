@@ -4,6 +4,26 @@
 #Include, core_captcha.ahk
 #Include, core_movement.ahk
 
+monster_exists(x_offset, y_offset, monster) {
+	; x_offset, y_offset are relative coordinates to the player position 
+	north_x := y_offset * 26.9  ; pixel offset for y axis 
+	north_y := y_offset * -14.3 ; movement 
+
+	east_x := x_offset * 27.2  ; pixel offset for x axis
+	east_y := x_offset * 13    ; movement
+
+	cx := player_x + north_x + east_x ; absolute mouse 
+	cy := player_y + north_y + east_y ; position
+
+	CoordMode, Pixel, Window
+	lower_x := cx - 75
+	upper_x := cx + 75
+	lower_y := cy - 75
+	upper_y := cy + 75
+	ImageSearch, x, y, %lower_x%, %lower_y%, %upper_x%, %upper_y%, %A_WorkingDir%\img\monsters\%monster%.png
+	return !ErrorLevel
+}
+
 move_and_fight(x, y, tolerance:=1, eat_attempts:=3, previous_position:=False) {
 	rv := move(x, y, tolerance, previous_position)
 	if (wait_begin_combat(2)) {
