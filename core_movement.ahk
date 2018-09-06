@@ -28,14 +28,7 @@ class CombatCoordinate extends Coordinate {
 	travel(tolerance:=1, previous_position:=False) {
 		rv := move_and_fight(this.x, this.y, 1, 3, previous_position)
 		Sleep, 500
-		CoordMode, Pixel, Window
-		ImageSearch, x, y, 345, 172, 475, 293, %A_WorkingDir%\img\interface\loot_crate.png
-		If (!ErrorLevel) {
-			print("[ALERT] Detected loot crate. Destroying.")
-			Click, %x%, %y%, Right, 1
-			Sleep, 500
-			Click, Rel 10, 50 Left, 1
-		}
+		destroy_loot_crate()
 		return False ; This is for position caching. Cannot currently cache position of combatcoordinate.
 		; Interferes with combat scripts.
 	}
@@ -52,6 +45,17 @@ class Portal {
 
 	travel(tolerance:=0, previous_position:=False) {
 		return portal_move(this.x_destination, this.y_destination, this.x_entrance, this.y_entrance, tolerance, previous_position)
+	}
+}
+
+destroy_loot_crate() {
+	CoordMode, Pixel, Window
+	ImageSearch, x, y, 345, 172, 475, 293, %A_WorkingDir%\img\interface\loot_crate.png
+	If (!ErrorLevel) {
+		print("[ALERT] Detected loot crate. Destroying.")
+		Click, %x%, %y%, Right, 1
+		Sleep, 500
+		Click, Rel 10, 50 Left, 1
 	}
 }
 
@@ -91,7 +95,7 @@ get_coordinate() {
 	y_l := y_l + 9 ; Bottom y bound
 	y_r := y_r - 8 ; Top y bound 
 
-	While (Clipboard = "" and A_Index < 5) {
+	While (Clipboard = "" and A_Index < 3) {
 		Click, %x_l%, %y_l%, 0
 		Send, {LAlt Down}
 		send, %hk_ocr%
