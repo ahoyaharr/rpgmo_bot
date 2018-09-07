@@ -57,6 +57,7 @@ destroy_loot_crate() {
 		Sleep, 500
 		Click, Rel 10, 50 Left, 1
 	}
+	return !ErrorLevel
 }
 
 walk_path(path, tolerance:=0, reversed:=False) {
